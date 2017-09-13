@@ -168,6 +168,10 @@ module Slather
         dir = Dir[File.join("#{build_directory}","/**/CodeCoverage")].first
       end
 
+      if dir == nil
+        dir = Dir[File.join("#{build_directory}", "/ProfileData/**")].first
+      end
+
       raise StandardError, "No coverage directory found." unless dir != nil
       dir
     end
@@ -408,7 +412,7 @@ module Slather
         search_list = binary_basename || find_buildable_names(xcscheme)
 
         search_list.each do |search_for|
-          found_product = Dir["#{profdata_coverage_dir}/Products/#{configuration}*/#{search_for}*"].sort { |x, y|
+          found_product = Dir["#{build_directory}/Products/#{configuration}*/#{search_for}*"].sort { |x, y|
             # Sort the matches without the file extension to ensure better matches when there are multiple candidates
             # For example, if the binary_basename is Test then we want Test.app to be matched before Test Helper.app
             File.basename(x, File.extname(x)) <=> File.basename(y, File.extname(y))
